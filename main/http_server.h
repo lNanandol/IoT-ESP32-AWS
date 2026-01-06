@@ -63,7 +63,7 @@ void http_server_start(void);
 /**
  * Stops the HTTP Server  
  */
-void https_server_stop(void);
+void http_server_stop(void);
 
 /**
  * @brief Timer callback function which call esp_restart upon sucessful firmware update

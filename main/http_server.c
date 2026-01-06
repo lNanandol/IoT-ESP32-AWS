@@ -617,7 +617,7 @@ void http_server_start(void)
     }
 }
 
-void https_server_stop(void)
+void http_server_stop(void)
 {
     if (http_server_handle)
     {
