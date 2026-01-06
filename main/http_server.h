@@ -21,6 +21,7 @@ typedef enum http_server_wifi_connect_status
 	HTTP_WIFI_STATUS_CONNECTING,
 	HTTP_WIFI_STATUS_CONNECT_FAIL,
 	HTTP_WIFI_STATUS_CONNECT_SUCCESS,
+	HTTP_WIFI_STATUS_DISCONNECTED,
 } http_server_wifi_connect_status_e;
 
 /*
@@ -33,6 +34,7 @@ typedef enum http_server_message
 	HTTP_MSG_WIFI_CONNECT_FAIL,
 	HTTP_MSG_OTA_UPDATE_SUCCESSFUL,
 	HTTP_MSG_OTA_UPDATE_FAILED,
+	HTTP_MSG_WIFI_USER_DISCONNECT,
 } http_server_message_e;
 
 /*
