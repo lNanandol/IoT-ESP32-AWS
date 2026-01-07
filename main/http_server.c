@@ -464,7 +464,7 @@ static esp_err_t http_server_wifi_disconnect_json_handler(httpd_req_t *req)
 }
 
 /**
- * @brief localTime.json handler responds by sneding the local time
+ * @brief localTime.json handler responds by sending the local time
  * @param req HTTP request for wich the uri need to be handled 
  * @return ESP_OK
  */
@@ -485,6 +485,28 @@ static esp_err_t http_server_get_local_time_json_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+/**
+ * @brief apSSID.json handler responds by sending the AP SSID
+ * @param req HTTP request for wich the uri need to be handled 
+ * @return ESP_OK
+ */
+static esp_err_t http_server_get_ap_ssid_json_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "/apSSID.json requested");
+
+    char ssidJSON[50];
+    
+    wifi_config_t* wifi_config = wifi_app_get_wifi_config();
+    esp_wifi_get_config(ESP_IF_WIFI_STA, wifi_config);
+    char *ssid = (char*)wifi_config->ap.ssid;
+
+    sprintf(ssidJSON, "{\"ssid\":\"%s\"}", ssid);
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, ssidJSON, strlen(ssidJSON));
+
+    return ESP_OK;
+}
 /**
  * Set the default HTTPD server configuration
  * @return http server instance handle if sucessful, NULL otherwise  
@@ -650,6 +672,15 @@ static httpd_handle_t http_server_configure(void)
             .user_ctx = NULL,
         };
         httpd_register_uri_handler(http_server_handle, &local_time_json);
+
+        // Register apSSID.json handler
+        httpd_uri_t ap_ssid_json = {
+            .uri = "/apSSID.json",
+            .method = HTTP_GET,
+            .handler = http_server_get_ap_ssid_json_handler,
+            .user_ctx = NULL,
+        };
+        httpd_register_uri_handler(http_server_handle, &ap_ssid_json);
 
         return http_server_handle;
 
