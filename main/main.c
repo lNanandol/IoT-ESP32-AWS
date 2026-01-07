@@ -4,10 +4,20 @@
 #include "esp_err.h"
 #include "nvs.h"
 #include "nvs_flash.h"
+#include "esp_log.h"
 
 #include "wifi_app.h"
 #include "DHT11.h"
 #include "wifi_reset_button.h"
+#include "sntp_time_sync.h"
+
+static const char TAG[] = "main";
+
+void wifi_application_connected_events(void)
+{
+	ESP_LOGI(TAG, "WiFi application connected");
+	sntp_time_sync_task_start();
+}
 
 void app_main(void)
 {
@@ -28,4 +38,7 @@ void app_main(void)
 
 	// DHT22 Start
 	DHT11_task_start();
+
+	// Set connceted event callback 
+	wifi_app_set_callback(&wifi_application_connected_events);
 }

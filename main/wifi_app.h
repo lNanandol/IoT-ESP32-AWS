@@ -13,6 +13,9 @@
 
 #include "esp_wifi_types_generic.h"
 
+// Callback typedef
+typedef void (*wifi_connected_event_callback_t)(void);
+
 //Wifi applications settings
 #define WIFI_AP_SSID				"ESP32_AP"			// AP name
 #define WIFI_AP_PASSWORD			"ESP32_PASSWORD"	// WiFi access point password
@@ -73,6 +76,16 @@ void wifi_app_start(void);
  * @brief Gets the WiFi configuration
  */
 wifi_config_t* wifi_app_get_wifi_config(void);
+
+/**
+ * @brief Sets the callback function
+ */
+void wifi_app_set_callback(wifi_connected_event_callback_t callback);
+
+/**
+ * @brief Calls the callback funtion
+ */
+void wifi_app_call_callback(void);
 
 #endif /* MAIN_WIFI_APP_H_ */
 

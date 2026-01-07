@@ -34,6 +34,9 @@
 // Tag used for ESP serial console messages 
 static const char TAG [] = "wifi_app";
 
+// Wifi application callback
+static wifi_connected_event_callback_t wifi_connected_event_callback;
+
 // Used for returning WiFi configuration
 wifi_config_t *wifi_config = NULL;
 
@@ -315,6 +318,12 @@ static void wifi_app_task(void *pvParameters)
 						xEventGroupClearBits(wifi_app_event_group, WIFI_APP_CONNECTING_FROM_HTTP_SERVER_BIT);
 					}
 
+					// Check for connection callback
+					if (wifi_connected_event_callback)
+					{
+						wifi_app_call_callback();
+					}
+
 					break;
 					
 				case WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT:
@@ -388,6 +397,16 @@ BaseType_t wifi_app_send_message(wifi_app_message_e msgID)
 wifi_config_t* wifi_app_get_wifi_config(void)
 {
 	return wifi_config;
+}
+
+void wifi_app_set_callback(wifi_connected_event_callback_t callback)
+{
+	wifi_connected_event_callback = callback;
+}
+
+void wifi_app_call_callback(void)
+{
+	wifi_connected_event_callback();
 }
 
 void wifi_app_start(void)
