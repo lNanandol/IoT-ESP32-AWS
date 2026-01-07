@@ -11,6 +11,7 @@ var wifiConnectInterval = null;
 $(document).ready(function(){
 	getUpdateStatus();
     startDHTSensorInterval();
+    startLocalTimeInterval();
     getConnectInfo();
     $("#connect_wifi").on("click", function(){
         checkCredentials();
@@ -302,4 +303,23 @@ function disconnectWifi()
     });
     // Update the web page
     setTimeout("location.reload(true);", 2000);
+}
+
+/**
+ * Sets the interval for displaying the local time once SNTP is synchronized
+ */
+function startLocalTimeInterval()
+{
+    setInterval(getLocalTime, 10000);
+}
+
+/**
+ * Gets the local time from the ESP32 and displays it on the web page
+ * @note This requires WiFi connection and SNTP synchronization to work
+ */
+function getLocalTime()
+{
+    $.getJSON('/localTime.json', function(data) {  
+        $("#local_time").text(data["time"]);
+    });
 }
