@@ -66,7 +66,15 @@ void wifi_reset_button_config(void)
     gpio_set_intr_type(WIFI_RESET_BUTTON_GPIO, GPIO_INTR_NEGEDGE);
 
     // Create the Wifi reset button task
-    xTaskCreatePinnedToCore(&wifi_reset_button_task, "wifi_reset_button_task", WIFI_RESET_BUTTON_TASK_STACK_SIZE, NULL, WIFI_RESET_BUTTON_TASK_PRIORITY, NULL, WIFI_RESET_BUTTON_TASK_CORE_ID);
+    xTaskCreatePinnedToCore(
+        &wifi_reset_button_task, 
+        "wifi_reset_button_task", 
+        WIFI_RESET_BUTTON_TASK_STACK_SIZE, 
+        NULL, 
+        WIFI_RESET_BUTTON_TASK_PRIORITY, 
+        NULL, 
+        WIFI_RESET_BUTTON_TASK_CORE_ID
+    );
 
     // Intall GPIO isr service
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);

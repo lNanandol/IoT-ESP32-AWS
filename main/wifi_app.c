@@ -137,8 +137,24 @@ static void wifi_app_event_handler_init(void)
 	// Event handler for the connection 
 	esp_event_handler_instance_t instance_wifi_event;
 	esp_event_handler_instance_t instance_ip_event;
-	ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_app_event_handler, NULL, &instance_wifi_event));
-	ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_app_event_handler, NULL, &instance_ip_event));
+	ESP_ERROR_CHECK(
+		esp_event_handler_instance_register(
+			WIFI_EVENT, 
+			ESP_EVENT_ANY_ID, 
+			&wifi_app_event_handler, 
+			NULL, 
+			&instance_wifi_event
+		)
+	);
+	ESP_ERROR_CHECK(
+		esp_event_handler_instance_register(
+			IP_EVENT, 
+			ESP_EVENT_ANY_ID, 
+			&wifi_app_event_handler, 
+			NULL, 
+			&instance_ip_event
+		)
+	);
 }
 
 /*
@@ -395,7 +411,15 @@ void wifi_app_start(void)
 	wifi_app_event_group = xEventGroupCreate();
 	
 	// Start the WiFi application task
-	xTaskCreatePinnedToCore(&wifi_app_task, "wifi_app_task", WIFI_APP_TASK_STACK_SIZE, NULL, WIFI_APP_TASK_PRIORITY, NULL, WIFI_APP_TASK_CORE_ID);
+	xTaskCreatePinnedToCore(
+		&wifi_app_task, 
+		"wifi_app_task", 
+		WIFI_APP_TASK_STACK_SIZE, 
+		NULL, 
+		WIFI_APP_TASK_PRIORITY, 
+		NULL, 
+		WIFI_APP_TASK_CORE_ID
+	);
 }
 
 
