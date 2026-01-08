@@ -87,6 +87,12 @@ void wifi_app_set_callback(wifi_connected_event_callback_t callback);
  */
 void wifi_app_call_callback(void);
 
+/**
+ * Gets the RSSI value of the wifi connection 
+ * @return current RSSI level
+ */
+int8_t wifi_app_get_rssi();
+
 #endif /* MAIN_WIFI_APP_H_ */
 
 
