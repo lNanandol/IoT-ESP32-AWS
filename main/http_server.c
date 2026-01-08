@@ -352,45 +352,45 @@ static esp_err_t http_server_get_dht_sensor_readings_json_handler(httpd_req_t *r
  * @return ESP_OK
  */
 static esp_err_t http_server_wifi_connect_json_handler(httpd_req_t *req)
-{
-    ESP_LOGI(TAG, "/wifiConnect.jason requested");
-
-    size_t len_ssid = 0, len_pass = 0;
-    char *ssid_str = NULL, *pass_str = NULL;
-
-    //Get SSID header
-    len_ssid = httpd_req_get_hdr_value_len(req, "my-connect-ssid") + 1;
-    if (len_ssid > 1)
     {
-        ssid_str = malloc(len_ssid);
-        if (httpd_req_get_hdr_value_str(req, "my-connect-ssid", ssid_str, len_ssid) == ESP_OK)
+        ESP_LOGI(TAG, "/wifiConnect.jason requested");
+
+        size_t len_ssid = 0, len_pass = 0;
+        char *ssid_str = NULL, *pass_str = NULL;
+
+        //Get SSID header
+        len_ssid = httpd_req_get_hdr_value_len(req, "my-connect-ssid") + 1;
+        if (len_ssid > 1)
         {
-            ESP_LOGI(TAG, "http_server_wifi_connect_json_handler: Found header -> my-connect-ssid: %s", ssid_str);
+            ssid_str = malloc(len_ssid);
+            if (httpd_req_get_hdr_value_str(req, "my-connect-ssid", ssid_str, len_ssid) == ESP_OK)
+            {
+                ESP_LOGI(TAG, "http_server_wifi_connect_json_handler: Found header -> my-connect-ssid: %s", ssid_str);
+            }
         }
-    }
 
-    //Get Password header
-    len_pass = httpd_req_get_hdr_value_len(req, "my-connect-pwd") + 1;
-    if (len_pass > 1)
-    {
-        pass_str = malloc(len_pass);
-        if (httpd_req_get_hdr_value_str(req, "my-connect-pwd", pass_str, len_pass) == ESP_OK)
+        //Get Password header
+        len_pass = httpd_req_get_hdr_value_len(req, "my-connect-pwd") + 1;
+        if (len_pass > 1)
         {
-            ESP_LOGI(TAG, "http_server_wifi_connect_json_handler: Found header -> my-connect-pwd: %s", pass_str);
+            pass_str = malloc(len_pass);
+            if (httpd_req_get_hdr_value_str(req, "my-connect-pwd", pass_str, len_pass) == ESP_OK)
+            {
+                ESP_LOGI(TAG, "http_server_wifi_connect_json_handler: Found header -> my-connect-pwd: %s", pass_str);
+            }
         }
-    }
 
-    // Update the Wifi networks configuration and let the wifi application know
-    wifi_config_t* wifi_config = wifi_app_get_wifi_config();
-    memset(wifi_config, 0x00, sizeof(wifi_config_t));
-    memcpy(wifi_config->sta.ssid, ssid_str, len_ssid);
-    memcpy(wifi_config->sta.password, pass_str, len_pass);
-    wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
+        // Update the Wifi networks configuration and let the wifi application know
+        wifi_config_t* wifi_config = wifi_app_get_wifi_config();
+        memset(wifi_config, 0x00, sizeof(wifi_config_t));
+        memcpy(wifi_config->sta.ssid, ssid_str, len_ssid);
+        memcpy(wifi_config->sta.password, pass_str, len_pass);
+        wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
 
-    free(ssid_str);
-    free(pass_str);
+        free(ssid_str);
+        free(pass_str);
 
-    return ESP_OK;
+        return ESP_OK;
 }
 
 /**
@@ -541,10 +541,10 @@ static httpd_handle_t http_server_configure(void)
 
     // Increase uri handlers
     config.max_uri_handlers = 20;
-
+    
     // Increase the time out limits
-    config.recv_wait_timeout = 10;
-    config.send_wait_timeout = 10;
+    config.recv_wait_timeout = 30;
+    config.send_wait_timeout = 30;
 
     ESP_LOGI(TAG,
             "http_server_configure: Starting server on port: '%d' with task prority: '%d'",
@@ -657,7 +657,7 @@ static httpd_handle_t http_server_configure(void)
 
         // Register wifiDisconnect.json handler
         httpd_uri_t wifi_disconnect_json = {
-            .uri = "/wifiDisonnect.json",
+            .uri = "/wifiDisconnect.json",
             .method = HTTP_DELETE,
             .handler = http_server_wifi_disconnect_json_handler,
             .user_ctx = NULL,
@@ -688,14 +688,6 @@ static httpd_handle_t http_server_configure(void)
     return NULL;
 }
 
-void http_server_start(void)
-{
-    if (http_server_handle == NULL)
-    {
-        http_server_handle = http_server_configure();
-    }
-}
-
 void http_server_stop(void)
 {
     if (http_server_handle)
@@ -723,4 +715,12 @@ void http_server_fw_update_reset_callback(void *arg)
 {
     ESP_LOGI(TAG, "http_server_fw_update_reset_callback: Timer timed-out, restarting the device");
     esp_restart();
+}
+
+void http_server_start(void)
+{
+    if (http_server_handle == NULL)
+    {
+        http_server_handle = http_server_configure();
+    }
 }
