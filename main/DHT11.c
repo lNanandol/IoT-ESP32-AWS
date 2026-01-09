@@ -192,7 +192,15 @@ static void DHT11_task(void *pvParameter)
 
 void DHT11_task_start(void)
 {
-	xTaskCreatePinnedToCore(&DHT11_task, "DHT11_task", DHT11_TASK_STACK_SIZE, NULL, DHT11_TASK_PRIORITY, NULL, DHT11_TASK_CORE_ID);
+	xTaskCreatePinnedToCore(
+		&DHT11_task, 
+		"DHT11_task", 
+		DHT11_TASK_STACK_SIZE, 
+		NULL, 
+		DHT11_TASK_PRIORITY, 
+		NULL, 
+		DHT11_TASK_CORE_ID
+	);
 }
 
 

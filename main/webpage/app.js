@@ -281,7 +281,7 @@ function getConnectInfo()
         $("#wifi_connect_ap").text(data["ip"]);
 
         $("#netmask_label").html("Netmask: ");
-        $("#wifi_connect_netmask").text(data["metmask"]);    
+        $("#wifi_connect_netmask").text(data["netmask"]);    
 
         $("#gateway_label").html("Gateway: ");
         $("#wifi_connect_gw").text(data["gw"]);

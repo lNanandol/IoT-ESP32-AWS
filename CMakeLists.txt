@@ -8,4 +8,6 @@ set(EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/common_components/protocol_exa
 						 "esp-aws-iot/libraries/common/posix_compat"
 	)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+get_filename_component(ProjectId ${CMAKE_CURRENT_LIST_DIR} NAME)
+string(REPLACE " " "_" ProjectId ${ProjectId})
 project(Curso_ESP_IoT)

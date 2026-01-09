@@ -96,6 +96,9 @@
     #error "Please define a unique client identifier, CLIENT_IDENTIFIER, in menuconfig"
 #endif
 
+#define ROOT_CA_CERT_LEN \
+    ( root_cert_auth_pem_end - root_cert_auth_pem_start )
+
 /* The AWS IoT message broker requires either a set of client certificate/private key
  * or username/password to authenticate the client. */
 
@@ -562,7 +565,8 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
     uint16_t nextRetryBackOff;
 
     /* Initialize credentials for establishing TLS session. */
-    pNetworkContext->pcServerRootCA = root_cert_auth_pem_start;
+    pNetworkContext->pcServerRootCA     = root_cert_auth_pem_start;
+    pNetworkContext->pcServerRootCASize = ROOT_CA_CERT_LEN;
 
     /* If #CLIENT_USERNAME is defined, username/password is used for authenticating
      * the client. */
@@ -578,8 +582,11 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
     /* The ds_data can be populated using the API's provided by esp_secure_cert_mgr */
 #else
     #ifndef CLIENT_USERNAME
-        pNetworkContext->pcClientCert = client_cert_pem_start;
-        pNetworkContext->pcClientKey = client_key_pem_start;
+        pNetworkContext->pcClientCert     = client_cert_pem_start;
+        pNetworkContext->pcClientCertSize = client_cert_pem_end - client_cert_pem_start;
+
+        pNetworkContext->pcClientKey      = client_key_pem_start;
+        pNetworkContext->pcClientKeySize  = client_key_pem_end - client_key_pem_start;
     #endif
 #endif
     /* AWS IoT requires devices to send the Server Name Indication (SNI)
