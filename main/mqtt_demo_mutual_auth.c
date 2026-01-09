@@ -337,6 +337,12 @@ static MQTTSubscribeInfo_t pGlobalSubscriptionList[ 1 ];
 static uint8_t buffer[ NETWORK_BUFFER_SIZE ];
 
 /**
+ * @brief Buffers para el protocolo QoS 1 y establecer comunicacion MQTT
+ *  */
+static MQTTPubAckInfo_t pOutgoingPublishRecords[ MAX_OUTGOING_PUBLISHES ];
+static MQTTPubAckInfo_t pIncomingPublishRecords[ MAX_OUTGOING_PUBLISHES ]; 
+
+/**
  * @brief Status of latest Subscribe ACK;
  * it is updated every time the callback function processes a Subscribe ACK
  * and accounts for subscription to a single topic.
@@ -347,6 +353,12 @@ static MQTTSubAckStatus_t globalSubAckStatus = MQTTSubAckFailure;
  * @brief Static buffer for TLS Context Semaphore.
  */
 static StaticSemaphore_t xTlsContextSemaphoreBuffer;
+
+/**
+ * @brief Variable global para transport
+ * Soluciona error de stack overflow al definirla dentro de la función aws_iot_demo_main 
+ */
+static TransportInterface_t globalTransport = {0};
 
 /*-----------------------------------------------------------*/
 
@@ -1093,7 +1105,12 @@ static int establishMqttSession( MQTTContext_t * pMqttContext,
     #endif /* ifdef CLIENT_USERNAME */
 
     /* Send MQTT CONNECT packet to broker. */
-    mqttStatus = MQTT_Connect( pMqttContext, &connectInfo, NULL, CONNACK_RECV_TIMEOUT_MS, pSessionPresent );
+    mqttStatus = MQTT_Connect( 
+        pMqttContext, 
+        &connectInfo, 
+        NULL, 
+        CONNACK_RECV_TIMEOUT_MS, 
+        pSessionPresent );
 
     if( mqttStatus != MQTTSuccess )
     {
@@ -1283,7 +1300,6 @@ static int initializeMqtt( MQTTContext_t * pMqttContext,
     int returnStatus = EXIT_SUCCESS;
     MQTTStatus_t mqttStatus;
     MQTTFixedBuffer_t networkBuffer;
-    TransportInterface_t transport;
 
     assert( pMqttContext != NULL );
     assert( pNetworkContext != NULL );
@@ -1291,9 +1307,9 @@ static int initializeMqtt( MQTTContext_t * pMqttContext,
     /* Fill in TransportInterface send and receive function pointers.
      * For this demo, TCP sockets are used to send and receive data
      * from network. Network context is SSL context for OpenSSL.*/
-    transport.pNetworkContext = pNetworkContext;
-    transport.send = espTlsTransportSend;
-    transport.recv = espTlsTransportRecv;
+    globalTransport.pNetworkContext = pNetworkContext;
+    globalTransport.send = espTlsTransportSend;
+    globalTransport.recv = espTlsTransportRecv;
 
     /* Fill the values for network buffer. */
     networkBuffer.pBuffer = buffer;
@@ -1301,7 +1317,7 @@ static int initializeMqtt( MQTTContext_t * pMqttContext,
 
     /* Initialize MQTT library. */
     mqttStatus = MQTT_Init( pMqttContext,
-                            &transport,
+                            &globalTransport,
                             Clock_GetTimeMs,
                             eventCallback,
                             &networkBuffer );
@@ -1310,6 +1326,19 @@ static int initializeMqtt( MQTTContext_t * pMqttContext,
     {
         returnStatus = EXIT_FAILURE;
         LogError( ( "MQTT init failed: Status = %s.", MQTT_Status_strerror( mqttStatus ) ) );
+    }
+    /* Initialize Stateful QoS library. This library manages the state
+     * of all the QoS1 publishes. */
+    mqttStatus = MQTT_InitStatefulQoS( pMqttContext,
+                                       pOutgoingPublishRecords,
+                                       MAX_OUTGOING_PUBLISHES,
+                                       pIncomingPublishRecords,
+                                       MAX_OUTGOING_PUBLISHES );
+
+    if( mqttStatus != MQTTSuccess )
+    {
+        LogError( ( "MQTT QoS init failed: Status = %s.", MQTT_Status_strerror( mqttStatus ) ) );
+        returnStatus = EXIT_FAILURE;
     }
 
     return returnStatus;

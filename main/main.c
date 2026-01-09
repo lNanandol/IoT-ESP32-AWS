@@ -2,13 +2,14 @@
 	Application entry point
 */
 
-// to do: Intentar resolver problema de "Header Files Too Large" al intentar conectar a una red WiFi desde la pagina web
-
 #include "esp_err.h"
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
+#include "tasks_common.h"
 #include "wifi_app.h"
 #include "DHT11.h"
 #include "wifi_reset_button.h"
@@ -22,7 +23,7 @@ void wifi_application_connected_events(void)
 {
 	ESP_LOGI(TAG, "WiFi application connected");
 	sntp_time_sync_task_start();
-	aws_iot_demo_main(0, NULL);
+    aws_iot_demo_main(0, NULL);
 }
 
 void app_main(void)
