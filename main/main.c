@@ -1,6 +1,9 @@
 /*
 	Application entry point
 */
+
+// to do: Intentar resolver problema de "Header Files Too Large" al intentar conectar a una red WiFi desde la pagina web
+
 #include "esp_err.h"
 #include "nvs.h"
 #include "nvs_flash.h"
