@@ -29,7 +29,7 @@ static void spi_app_task(void *pvParameters)
     spi_app_queue_message_t msg;
     esp_err_t ret;
 
- 
+    // Bus Configuration
     spi_bus_config_t buscfg = {
         .mosi_io_num = SPI_MOSI_PIN,
         .miso_io_num = SPI_MISO_PIN,
@@ -38,7 +38,7 @@ static void spi_app_task(void *pvParameters)
         .quadhd_io_num = SPI_BUS_HD,
     };
 
-    // 2. Slave Interface Configuration
+    // Slave Interface Configuration
     spi_slave_interface_config_t slvcfg = {
         .mode = SPI_MODE,
         .spics_io_num = SPI_CS_PIN,
@@ -46,7 +46,7 @@ static void spi_app_task(void *pvParameters)
         .flags = SPI_FLAGS,
     };
 
-    // 3. Initialize SPI Slave
+    // Initialize SPI Slave
     ret = spi_slave_initialize(VSPI_HOST, &buscfg, &slvcfg, SPI_DMA_CH_AUTO);
     ESP_ERROR_CHECK(ret);
 
