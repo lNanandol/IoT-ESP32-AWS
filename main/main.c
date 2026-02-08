@@ -12,18 +12,19 @@
 #include "tasks_common.h"
 #include "wifi_app.h"
 #include "DHT11.h"
+#include "SPI.h"
 #include "wifi_reset_button.h"
 #include "sntp_time_sync.h"
 
 static const char TAG[] = "main";
 
-int aws_iot_demo_main(int argc, char ** argv);
+int aws_iot_demo_main(int argc, char **argv);
 
 void wifi_application_connected_events(void)
 {
 	ESP_LOGI(TAG, "WiFi application connected");
 	sntp_time_sync_task_start();
-    aws_iot_demo_main(0, NULL);
+	aws_iot_demo_main(0, NULL);
 }
 
 void app_main(void)
@@ -36,7 +37,7 @@ void app_main(void)
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
-	
+
 	// Start WiFi
 	wifi_app_start();
 
@@ -46,6 +47,9 @@ void app_main(void)
 	// DHT22 Start
 	DHT11_task_start();
 
-	// Set connceted event callback 
+	// SPI Start
+	spi_app_start();
+
+	// Set connceted event callback
 	wifi_app_set_callback(&wifi_application_connected_events);
 }

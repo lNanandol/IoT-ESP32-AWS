@@ -28,7 +28,7 @@
 #define WIFI_RESET_BUTTON_TASK_PRIORITY     6
 #define WIFI_RESET_BUTTON_TASK_CORE_ID      0
 
-// DHT22 Sesnor Task
+// DHT11 Sensor Task
 #define DHT11_TASK_STACK_SIZE               4096
 #define DHT11_TASK_PRIORITY                 5
 #define DHT11_TASK_CORE_ID                  1
@@ -42,5 +42,10 @@
 #define AWS_IOT_TASK_STACK_SIZE             9126
 #define AWS_IOT_TASK_PRIORITY               6
 #define AWS_IOT_TASK_CORE_ID                1
+
+// SPI Task
+#define SPI_APP_TASK_STACK_SIZE             4096
+#define SPI_APP_TASK_PRIORITY               5
+#define SPI_APP_TASK_CORE_ID                1
 
 #endif /* MAIN_TASKS_COMMON_H_ */

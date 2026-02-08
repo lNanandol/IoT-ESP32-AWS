@@ -14,7 +14,7 @@
 
 static const char* TAG = "DHT";
 
-int DHTgpio = 4;				// my default DHT pin = 4
+int DHTgpio = 14;				// my default DHT pin = 14
 float humidity = 0.;
 float temperature = 0.;
 
@@ -167,7 +167,7 @@ uint8_t bitInx = 7;
 }
 
 /**
- * DHT22 Sensor task
+ * DHT11 Sensor task
  */
 static void DHT11_task(void *pvParameter)
 {
